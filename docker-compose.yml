@@ -1,0 +1,28 @@
+version: "3.7" #versi yang digunakan docker compose, yaitu versi 3.7
+
+services: #deklarasi service-service yang akan digunakan
+  item-db: #nama salah satu service yang digunakan, yaitu item-db
+    image: mongo:3 #image yang digunakan untuk database, yaitu mongodb dengan tag / versi 3
+    volumes: 
+    - app-db:/data/db #volume yang digunakan oleh service item-db dengan nama appdb dengan targetnya adalah /data/db
+    restart: always #menerapkan restart-policy agar container melakukan restart ketika terhenti
+
+  item-app: #nama service yang digunakan, yaitu item-db
+    image: ghcr.io/fiqrimaulanaar/item-app:v1 #image yang digunakan untuk item-app yang diambil dari github packages
+    command: sh -c "yarn install && yarn run start"
+    ports:
+    - 80:8080 #setting port 80 pada host dan 8080 pada container
+    working_dir: /app #inisialisasi directory app bekerja
+    volumes:
+    - ./:/app
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root #inisialisasi username mongodb
+      MONGO_INITDB_ROOT_PASSWORD: root #inisialisasi password mongodb
+    restart: always #menerapkan restart-policy agar container melakukan restart ketika terhenti
+    depends_on:
+    - item-db
+    
+
+
+volumes: 
+  app-db: #setting volumes dengan nama app-db
