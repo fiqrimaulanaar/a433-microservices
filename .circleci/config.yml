@@ -28,7 +28,7 @@ jobs:
           command: "docker push ghcr.io/fiqrimaulanaar/karsajobs-ui:latest"
 
 workflows:
-  build-push-image:
+  build-push-image-karsajobs-ui:
     jobs:
       - lint-dockerfile
-      - build-app-karsajobs
+      - build-app-karsajobs-ui
