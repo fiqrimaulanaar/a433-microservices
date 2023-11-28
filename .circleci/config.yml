@@ -32,7 +32,7 @@ jobs:
 
       - run:
           name: "Login github"
-          command: "docker login ghcr.io -u fiqrimaulanaar -p $CR_PAT"
+          command: "echo $CR_PAT | docker login ghcr.io -u fiqrimaulanaar --password-stdin"
 
       - run:
           name: "Docker push"
