@@ -22,7 +22,8 @@ jobs:
           command: "go test -v -short --count=1 $(go list ./...)"
 
   build-app-karsajobs:
-    executor: docker/machine
+    docker:
+      - image: cimg/base:stable
     steps:
       - checkout
       - setup_remote_docker
