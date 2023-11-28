@@ -1,26 +1,46 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/configuration-reference
 version: 2.1
+orbs:
+  docker: circleci/docker@2.4.0
+  go: circleci/go@1.9.0
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/configuration-reference/#executor-job
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/configuration-reference/#steps
+  lint-dockerfile:
+    executor: docker/docker
+    steps:
+      - checkout
+      - docker/hadolint:
+          dockerfiles: ./Dockerfile
+
+  test-app:
+    executor:
+      name: go/default
+      tag: "1.15"
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "test app"
+          command: "go test -v -short --count=1 $(go list ./...)"
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/configuration-reference/#workflows
+  build-app-karsajobs:
+    executor: docker/machine
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: "Docker build"
+          command: "docker build -t ghcr.io/fiqrimaulanaar/karsajobs:latest ."
+
+      - run:
+          name: "Login github"
+          command: "echo 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 | docker login ghcr.io -u fiqrimaulanaar --password-stdin"
+
+      - run:
+          name: "Docker push"
+          command: "docker push ghcr.io/fiqrimaulanaar/karsajobs:latest"
+
 workflows:
-  say-hello-workflow:
+  build-push-image:
     jobs:
-      - say-hello
+      - lint-dockerfile
+      - test-app
+      - build-app-karsajobs
