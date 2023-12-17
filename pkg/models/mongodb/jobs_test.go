@@ -22,7 +22,7 @@ func TestGetJobPosts(t *testing.T) {
 		&models.JobPost{
 			ID:          ToObjID("5ffe6904eb39b069de45323c"),
 			JobID:       2,
-			Company:     "PT. Penguins",
+			Company:     "PT Penguins",
 			Role:        "Software Engineer",
 			Location:    "Jakarta",
 			Description: "no description",
