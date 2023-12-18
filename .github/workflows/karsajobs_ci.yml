@@ -27,3 +27,18 @@ jobs:
 
       - name: Test app
         run: go test -v -short --count=1 $(go list ./...)
+
+  build-app-karsajobs:
+    needs: [lint-dockerfile, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Docker build
+        run: docker build -t ghcr.io/fiqrimaulanaar/karsajobs:latest .
+
+      - name: Docker login
+        run: docker login --username fiqrimaulanaar --password $ {{ secrets.PACKAGES_TOKEN }} ghcr.io
+
+      - name: Docker push
+        run: docker push ghcr.io/fiqrimaulanaar/karsajobs:latest
